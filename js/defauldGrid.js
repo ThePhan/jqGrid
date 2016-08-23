@@ -1,6 +1,7 @@
 // jQuery.extend(jQuery.jgrid.defaults, { altRows:true });
 // altRows: false,
 var lastsel2;
+var id;
 $(function() {
     $("#list").jqGrid({
             url: '../localdata/metadata.json',
@@ -51,16 +52,17 @@ $(function() {
             sortname: 'ProductId',
             sortorder: 'desc',
             viewrecords: true,
-            gridview: true,
+            gridview: false,
             caption: 'demo jqGrid',
             loadonce: true,
             autowidth: false,
             ondblClickRow: function(ProductId) {
-                alert("You double click row with id: " + ProductId);
+                id = ProductId;
+                // alert("You double click row with id: " + ProductId);
             },
             // onSelectRow: function(ProductId) {
             //     if (ProductId && ProductId !== lastsel2) {
-            //         // jQuery('#list').jqGrid('restoreRow', lastsel2);
+            //         jQuery('#list').jqGrid('restoreRow', lastsel2);
             //         jQuery('#list').jqGrid('editRow', ProductId, true);
             //         lastsel2 = ProductId;
             //     }
@@ -70,9 +72,9 @@ $(function() {
 
             // Solved error: jqGrid "No url is set"
             editurl: "clientArray",
-            cellsubmit : 'clientArray',
+            cellsubmit: 'clientArray',
             cellEdit: true
-            // cellurl: '/url/to/handling/the/changed/cell/value'
+                // cellurl: '/url/to/handling/the/changed/cell/value'
         }).navGrid('#pager', {
             search: true,
             view: true,
@@ -80,17 +82,6 @@ $(function() {
             add: true,
             del: true,
         })
-        // .jqGrid({
-        //
-        //     onSelectRow: function(id) {
-        //         if (ProductId && ProductId !== lastSel) {
-        //             jQuery(this).restoreRow(lastSel);
-        //             lastSel = ProductId;
-        //         }
-        //         jQuery(this).editRow(ProductId, true);
-        //     },
-        //
-        // })
         // .navButtonAdd('#pager', {
         //     caption: "Add",
         //     buttonicon: "ui-icon-add",
@@ -107,19 +98,30 @@ $(function() {
         //     },
         //     position: "last"
         // });
-        jQuery("#ed4").click( function() {
-        	jQuery("#list").jqGrid('editRow',"1");
-        	this.disabled = 'true';
-        	jQuery("#sved4").attr("disabled",false);
-        });
-        jQuery("#sved4").click( function() {
-        	jQuery("#list").jqGrid('saveRow',"1", checksave);
-        	jQuery("#sved4").attr("disabled",true);
-        	jQuery("#ed4").attr("disabled",false);
-        });
-        function checksave(result) {
-        	if (result.responseText=="") {alert("Update is missing!"); return false;}
-        	return true;
-        }
+
+    jQuery("#ed4").click(function() {
+        jQuery("#list").jqGrid('editRow', id);
+        this.disabled = 'true';
+        jQuery("#sved4").attr("disabled", false);
+    });
+
+    jQuery("#sved4").click(function() {
+        jQuery("#list").jqGrid('saveRow', id, checksave);
+        id = "";
+        jQuery("#sved4").attr("disabled", true);
+        jQuery("#ed4").attr("disabled", false);
+    });
+    jQuery("#dele").click(function() {
+        jQuery("#list").jqGrid('delRowData', id);
+    });
+
 
 });
+
+function checksave(result) {
+    if (result.responseText == "") {
+        alert("Update is missing!");
+        return false;
+    }
+    return true;
+}
